@@ -7,7 +7,7 @@ const Weather = () => {
   const [hourlyData, setHourlyData] = useState([]);
   const [dailyData, setDailyData] = useState([]);
   const [location, setLocation] = useState('');
-  const [view, setView] = useState('hourly'); 
+  const [view, setView] = useState('hourly');
 
   const searchLocation = (event) => {
     if (event.key === 'Enter') {
@@ -21,8 +21,8 @@ const Weather = () => {
 
         return axios.get(oneCallUrl);
       }).then((response) => {
-        setHourlyData(response.data.hourly.slice(0, 6));  
-        setDailyData(response.data.daily.slice(0, 6));    
+        setHourlyData(response.data.hourly.slice(0, 6));
+        setDailyData(response.data.daily.slice(0, 6));
       });
 
       setLocation('');
@@ -34,7 +34,7 @@ const Weather = () => {
       className="min-h-screen flex items-center justify-center bg-cover bg-center"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
-      <div className="max-w-lg w-full bg-white bg-opacity-10 backdrop-blur-md p-8 rounded-lg">
+      <div className="w-[700px]  bg-white bg-opacity-10 backdrop-blur-md p-8 rounded-lg">
         <div className="text-center">
           <input
             type="text"
@@ -46,20 +46,42 @@ const Weather = () => {
           />
           {data.name && (
             <>
-              <h1 className="text-4xl text-white">{data.name}</h1>
-              <p className="text-lg text-white">{new Date().toLocaleDateString()}</p>
-              <div className="flex items-center justify-center mt-4 text-white">
-                <div className="text-8xl font-light">{Math.round(data.main.temp)}°</div>
-                <div className="ml-4">
-                  <div className="text-2xl">{data.weather[0].description}</div>
-                  <div className="text-xl">
-                    {Math.round(data.main.temp_max)}° / {Math.round(data.main.temp_min)}°
+              <div className="flex items-center justify-between p-4 text-white mb-4 w-full">
+                <div>
+                  <h1 className="text-left text-4xl pb-2">{data.name}</h1>
+                  <p className="text-left text-lg">
+                    {new Date().toLocaleDateString(undefined, {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </p>
+                  <div className="flex flex-col items-start">
+                    <img
+                      src={`https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`}
+                      alt={data.weather[0].description}
+                      className="w-20 h-20"
+                    />
+                    <div className="text-left pt-4 text-2xl">{data.weather[0].description}</div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col justify-center items-center p-4">
+                  <div className="text-8xl font-light text-center">{Math.round(data.main.temp)}°</div>
+                  <div className="text-center">
+                    <div className="text-xl">
+                      {Math.round(data.main.temp_max)}° / {Math.round(data.main.temp_min)}°
+                    </div>
                   </div>
                 </div>
               </div>
+
+
             </>
           )}
         </div>
+
         <div className="mt-8 text-white">
           <div className="flex justify-around border-b border-white pb-2">
             <span
