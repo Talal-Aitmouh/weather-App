@@ -1,13 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import backgroundImage from './assets/back.jpg';
 
 const Weather = () => {
-  const [data, setData] = useState({});
+   const [data, setData] = useState({});
   const [hourlyData, setHourlyData] = useState([]);
   const [dailyData, setDailyData] = useState([]);
   const [location, setLocation] = useState('');
   const [view, setView] = useState('hourly');
+
+  // Function to fetch local weather based on geolocation
+  const fetchLocalWeather = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords;
+        const geocodingUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=895284fb2d2c50a520ea537456963d9c`;
+
+        axios.get(geocodingUrl).then((response) => {
+          setData(response.data);
+          const { lat, lon } = response.data.coord;
+
+          const oneCallUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=metric&appid=895284fb2d2c50a520ea537456963d9c`;
+
+          return axios.get(oneCallUrl);
+        }).then((response) => {
+          setHourlyData(response.data.hourly.slice(0, 6));
+          setDailyData(response.data.daily.slice(0, 6));
+        });
+      });
+    }
+  };
+
+  // Fetch local weather on component mount
+  useEffect(() => {
+    fetchLocalWeather();
+  }, []);
 
   const searchLocation = (event) => {
     if (event.key === 'Enter') {
@@ -61,7 +88,7 @@ const Weather = () => {
                     <img
                       src={`https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`}
                       alt={data.weather[0].description}
-                      className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20"
+                      className="w-20 h-20 sm:w-16 sm:h-16 md:w-20 md:h-20"
                     />
                     <div className="text-left pt-4 text-xl sm:text-2xl">{data.weather[0].description}</div>
                   </div>
