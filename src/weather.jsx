@@ -3,11 +3,13 @@ import axios from 'axios';
 import backgroundImage from './assets/back.jpg';
 
 const Weather = () => {
-   const [data, setData] = useState({});
+  const [data, setData] = useState({});
   const [hourlyData, setHourlyData] = useState([]);
   const [dailyData, setDailyData] = useState([]);
   const [location, setLocation] = useState('');
   const [view, setView] = useState('hourly');
+  const [showDetails, setShowDetails] = useState(false); // New state for details visibility
+
 
   // Function to fetch local weather based on geolocation
   const fetchLocalWeather = () => {
@@ -81,7 +83,7 @@ const Weather = () => {
                       weekday: 'long',
                       year: 'numeric',
                       month: 'long',
-                      day: 'numeric'
+                      day: 'numeric',
                     })}
                   </p>
                   <div className="flex flex-col items-start">
@@ -90,10 +92,12 @@ const Weather = () => {
                       alt={data.weather[0].description}
                       className="w-20 h-20 sm:w-16 sm:h-16 md:w-20 md:h-20"
                     />
-                    <div className="text-left pt-4 text-xl sm:text-2xl">{data.weather[0].description}</div>
+                    <div className="text-left pt-4 text-xl sm:text-2xl">
+                      {data.weather[0].description}
+                    </div>
                   </div>
                 </div>
-
+  
                 <div className="flex flex-col justify-center items-center p-4">
                   <div className="text-6xl sm:text-7xl md:text-8xl font-light text-center">
                     {Math.round(data.main.temp)}°
@@ -108,62 +112,95 @@ const Weather = () => {
             </>
           )}
         </div>
-
+  
         <div className="mt-8 text-white">
-          <div className="flex justify-around border-b border-white pb-2">
-            <span
-              className={`cursor-pointer border py-1 px-4 rounded-full text-base sm:text-lg ${view === 'hourly' ? 'font-bold bg-white text-black' : ''}`}
-              onClick={() => setView('hourly')}
-            >
-              Hourly
-            </span>
-            <span
-              className={`cursor-pointer border py-1 px-4 rounded-full text-base sm:text-lg ${view === 'daily' ? 'font-bold bg-white text-black' : ''}`}
-              onClick={() => setView('daily')}
-            >
-              Daily
-            </span>
-          </div>
-          <div className="flex justify-around mt-4">
-            {view === 'hourly' ? (
-              hourlyData.map((hour, index) => (
-                <div key={index} className="text-center">
-                  <p className="text-sm sm:text-base md:text-lg">
-                    {new Date(hour.dt * 1000).getHours()}AM
-                  </p>
-                  <img
-                    src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}@2x.png`}
-                    alt={hour.weather[0].description}
-                    className="w-10 h-10 sm:w-12 sm:h-12 mx-auto"
-                  />
-                  <p className="text-sm sm:text-base md:text-lg">
-                    {Math.round(hour.temp)}°
-                  </p>
-                </div>
-              ))
-            ) : (
-              dailyData.map((day, index) => (
-                <div key={index} className="text-center">
-                  <p className="text-sm sm:text-base md:text-lg">
-                    {new Date(day.dt * 1000).toLocaleDateString('en-US', { weekday: 'short' })}
-                  </p>
-                  <img
-                    src={`https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`}
-                    alt={day.weather[0].description}
-                    className="w-10 h-10 sm:w-12 sm:h-12 mx-auto"
-                  />
-                  <p className="text-sm sm:text-base md:text-lg">
-                    {Math.round(day.temp.day)}°
-                  </p>
-                </div>
-              ))
-            )}
-          </div>
+        <div className="flex justify-around border-b border-white pb-2">
+  <span
+    className={`cursor-pointer border py-1 px-4 rounded-full text-base sm:text-lg ${view === 'hourly' && !showDetails ? 'font-bold bg-white text-black' : ''}`}
+    onClick={() => {
+      setView('hourly');
+      setShowDetails(false); // Hide details when switching views
+    }}
+  >
+    Hourly
+  </span>
+  <span
+    className={`cursor-pointer border py-1 px-4 rounded-full text-base sm:text-lg ${view === 'daily' && !showDetails ? 'font-bold bg-white text-black' : ''}`}
+    onClick={() => {
+      setView('daily');
+      setShowDetails(false); // Hide details when switching views
+    }}
+  >
+    Daily
+  </span>
+  <span
+    className={`cursor-pointer border py-1 px-4 rounded-full text-base sm:text-lg ${showDetails ? 'font-bold bg-white text-black' : ''}`}
+    onClick={() => {
+      setShowDetails(!showDetails); 
+      setView('details'); // Set view to 'details' when showing details
+    }}
+  >
+    Details
+  </span>
+</div>
+
+  
+          {/* Show hourly or daily data based on the view if details are not active */}
+          {!showDetails && (
+            <div className="flex justify-around mt-4">
+              {view === 'hourly' ? (
+                hourlyData.map((hour, index) => (
+                  <div key={index} className="text-center">
+                    <p className="text-sm sm:text-base md:text-lg">
+                      {new Date(hour.dt * 1000).getHours()}AM
+                    </p>
+                    <img
+                      src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}@2x.png`}
+                      alt={hour.weather[0].description}
+                      className="w-10 h-10 sm:w-12 sm:h-12 mx-auto"
+                    />
+                    <p className="text-sm sm:text-base md:text-lg">
+                      {Math.round(hour.temp)}°
+                    </p>
+                  </div>
+                ))
+              ) : (
+                dailyData.map((day, index) => (
+                  <div key={index} className="text-center">
+                    <p className="text-sm sm:text-base md:text-lg">
+                      {new Date(day.dt * 1000).toLocaleDateString('en-US', {
+                        weekday: 'short',
+                      })}
+                    </p>
+                    <img
+                      src={`https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`}
+                      alt={day.weather[0].description}
+                      className="w-10 h-10 sm:w-12 sm:h-12 mx-auto"
+                    />
+                    <p className="text-sm sm:text-base md:text-lg">
+                      {Math.round(day.temp.day)}°
+                    </p>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+  
+          {/* Show details for the current day */}
+          {showDetails && dailyData[0] && (
+            <div className="text-sm sm:text-base text-center mt-4 flex space-x-8 py-10">
+              <p>Humidity: {dailyData[0].humidity}%</p>
+              <p>Cloudiness: {dailyData[0].clouds}%</p>
+              <p>Wind Speed: {dailyData[0].wind_speed} m/s</p>
+              {dailyData[0].rain && <p>Rain: {dailyData[0].rain} mm</p>}
+            </div>
+          )}
         </div>
       </div>
     </div>
-
   );
+  
+
 };
 
 export default Weather;
