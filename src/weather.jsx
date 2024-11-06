@@ -47,6 +47,9 @@ const Weather = () => {
     <source src="/weat.mp4" type="video/mp4" />
     Your browser does not support the video tag.
   </video>
+  <div className="absolute w-full h-screen inset-0 bg-black bg-opacity-50 backdrop-blur-sm">
+
+  </div>
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
