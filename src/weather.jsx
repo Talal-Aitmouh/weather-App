@@ -20,7 +20,7 @@ const Weather = () => {
   }, []);
 
   const fetchWeather = (query) => {
-    fetch(`https://api.openweathermap.org/data/2.5/weather?${query}&units=metric&appid=895284fb2d2c50a520ea537456963d9c`)
+    fetch(`https://api.openweathermap.org/data/2.5/weather?${query}&units=metric&appid=${import.meta.env.VITE_KEY}`)
       .then(res => res.json())
       .then(result => {
         setData(result);
@@ -35,14 +35,14 @@ const Weather = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-400 to-purple-500 p-4"
+    <div className="min-h-screen flex items-center justify-center p-4"
     
       >
         <video
     autoPlay
     loop
     muted
-    className="absolute inset-0 w-full h-full object-cover"
+    className="absolute inset-0 w-full h-screen object-cover"
   >
     <source src="/weat.mp4" type="video/mp4" />
     Your browser does not support the video tag.
